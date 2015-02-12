@@ -4,8 +4,9 @@ import json
 import os
 
 import requests
+from geomet import wkt
 
-BASEURL = 'https://api.urthecast.com/v1/members/subscriptions'
+BASEURL = 'https://www.urthecast.com/v1/api/apps/subscriptions'
 KEY = os.environ['URTHECAST_KEY']
 SECRET = os.environ['URTHECAST_SECRET']
 
@@ -59,9 +60,10 @@ class Urthecast():
 
         params = dict(key=KEY, secret=SECRET)
 
-        payload = cls.gen_payload(title, geom, start, end, email, text)
+        payload = json.dumps(cls.gen_payload(title, geom, start, end, email, text))
+        headers = {'content-type': 'application/json'}
 
-        r = requests.post(BASEURL, params=params, data=json.dumps(payload))
+        r = requests.post(BASEURL, params=params, data=payload, headers=headers)
 
         return r.json()
 
@@ -84,8 +86,14 @@ class Urthecast():
         if text:
             text = 1
 
+        # need actual dictionary for wkt conversion
+        if type(geom) == str:
+            geom = json.loads(geom)
+        geom = wkt.dumps(geom)
+
         payload = dict(title=title, email_notification=email,
                        text_message_notification=text, start_date=start,
                        end_date=end, geometry=geom)
 
         return payload
+print Urthecast.create('SF sub - this is it', geom=GEOM)
