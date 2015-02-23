@@ -20,6 +20,7 @@
 from gfw.forestchange.common import CartoDbExecutor
 from gfw.forestchange.common import Sql
 
+
 class TerraiSql(Sql):
 
     WORLD = """

@@ -27,6 +27,7 @@ from gfw.forestchange import umd
 from gfw.forestchange import quicc
 from gfw.forestchange import imazon
 from gfw.forestchange import terrai
+from gfw.forestchange import ifl
 from gfw.forestchange import args
 from gfw.common import CORSRequestHandler
 from gfw.common import APP_BASE_URL
@@ -37,6 +38,7 @@ FIRES_API = '%s/nasa-active-fires' % APP_BASE_URL
 QUICC_API = '%s/quicc-alerts' % APP_BASE_URL
 IMAZON_API = '%s/imazon-alerts' % APP_BASE_URL
 TERRAI_API = '%s/terrai-alerts' % APP_BASE_URL
+IFL_API = '%s/intact-forest-landscapes' % APP_BASE_URL
 
 META = {
     'forma-alerts': {
@@ -183,6 +185,30 @@ META = {
             TERRAI_API
         }
     },
+    'intact-forest-landscapes': {
+        'meta': {
+            "description": "",
+            "resolution": "",
+            "coverage": "",
+            "timescale": "",
+            "updates": "",
+            "source": "",
+            "units": "",
+            "name": "",
+            "id": "intact-forest-landscapes"
+        },
+        'apis': {
+            'world': '%s{?period,geojson,download,bust,dev}' % IFL_API,
+            'national': '%s/admin{/iso}{?period,download,bust,dev}' %
+            IFL_API,
+            'subnational': '%s/admin{/iso}{/id1}{?period,download,bust,dev}' %
+            IFL_API,
+            'use': '%s/use/{/name}{/id}{?period,download,bust,dev}' %
+            IFL_API,
+            'wdpa': '%s/wdpa/{/id}{?period,download,bust,dev}' %
+            IFL_API
+        }
+    }
 }
 
 # Maps dataset to accepted query params
@@ -228,6 +254,13 @@ PARAMS = {
         'id1': ['period', 'download', 'dev', 'bust'],
         'wdpa': ['period', 'download', 'dev', 'bust'],
         'use': ['period', 'download', 'dev', 'bust'],
+    },
+    'intact-forest-landscapes': {
+        'all': ['period', 'download', 'geojson', 'dev', 'bust'],
+        'iso': ['period', 'download', 'dev', 'bust'],
+        'id1': ['period', 'download', 'dev', 'bust'],
+        'wdpa': ['period', 'download', 'dev', 'bust'],
+        'use': ['period', 'download', 'dev', 'bust'],
     }
 }
 
@@ -238,7 +271,8 @@ TARGETS = {
     'nasa-active-fires': fires,
     'quicc-alerts': quicc,
     'imazon-alerts': imazon,
-    'terrai-alerts': terrai
+    'terrai-alerts': terrai,
+    'intact-forest-landscapes': ifl
 }
 
 
@@ -299,6 +333,8 @@ class Handler(CORSRequestHandler):
                 return
 
             dataset, rtype = _classify_request(path)
+
+            logging.info('DS:%s, RT:%s' % (dataset, rtype))
 
             # Unsupported dataset or reqest type
             if not dataset or not rtype:
