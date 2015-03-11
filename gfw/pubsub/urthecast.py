@@ -58,10 +58,26 @@ class Urthecast():
         return response.json()
 
     @classmethod
-    def notifications(cls, subid):
+    def parse_notifications(cls, notif_dict, subid=None):
+        if not subid:
+            return notif_dict
+        else:
+            payload = []
+            for item in notif_dict['payload']:
+                if item['type_metadata']['subscription_id'] == subid:
+                    payload.append(item)
+
+            notif_dict['payload'] = payload
+
+            return notif_dict
+
+    @classmethod
+    def notifications(cls, subid=None):
         params = dict(key=KEY, secret=SECRET)
         url = os.path.join(NOTIFYURL, str(subid))
-        return requests.get(url, params=params).json()
+        r = requests.get(url, params=params)
+
+        return cls.parse_notifications(r.json(), subid)
 
     @classmethod
     def delete(cls, subid):

@@ -32,6 +32,89 @@ GEOM = '''{
         ]
 }'''
 
+NOTIFICATION = '''{
+    "request_id": "8b946b86-3709-4f7c-8173-30783d9cbc82",
+    "request_time": 1420497434.5479,
+    "status": 200,
+    "messages": null,
+    "meta": {
+        "total": 3
+    },
+    "payload": [
+        {
+            "state": "new",
+            "type": "scene",
+            "type_metadata": {
+                "subscription_id": 135,
+                "subscription_title": "The World",
+                "scene_id": "00003273_002",
+                "platform_id": "iss",
+                "sensor_id": "theia",
+                "thumbnail_url": "https://www.urthecast.com/img/no-thumbnail.png",
+                "date_time_acquired": 1404219631000
+            },
+            "delivery_method": "text",
+            "consumer_id": 31,
+            "modified": "2014-12-18 00:42:53",
+            "created": "2014-12-18 00:42:53",
+            "id": "5492230daa6cf919738b4578"
+        },
+        {
+            "state": "new",
+            "type": "scene",
+            "type_metadata": {
+                "subscription_id": 134,
+                "subscription_title": "The World",
+                "scene_id": "00003273_002",
+                "platform_id": "iss",
+                "sensor_id": "theia",
+                "thumbnail_url": "https://www.urthecast.com/img/no-thumbnail.png",
+                "date_time_acquired": 1404219631000
+            },
+            "delivery_method": "text",
+            "consumer_id": 31,
+            "modified": "2014-12-18 00:42:53",
+            "created": "2014-12-18 00:42:53",
+            "id": "5492230daa6cf919738b4578"
+        },
+        {
+            "state": "new",
+            "type": "scene",
+            "type_metadata": {
+                "subscription_id": 134,
+                "subscription_title": "The World",
+                "scene_id": "00003273_002",
+                "platform_id": "iss",
+                "sensor_id": "theia",
+                "thumbnail_url": "https://www.urthecast.com/img/no-thumbnail.png",
+                "date_time_acquired": 1404219631000
+            },
+            "delivery_method": "email",
+            "consumer_id": 31,
+            "modified": "2014-12-18 00:42:53",
+            "created": "2014-12-18 00:42:53",
+            "id": "5492230daa6cf9de728b4577"
+        },
+        {
+            "state": "new",
+            "type": "scene",
+            "type_metadata": {
+                "subscription_id": 134,
+                "subscription_title": "The World",
+                "scene_id": "00003273_002",
+                "platform_id": "iss",
+                "sensor_id": "theia",
+                "thumbnail_url": "https://www.urthecast.com/img/no-thumbnail.png",
+                "date_time_acquired": 1404219631000
+            },
+            "delivery_method": "platform",
+            "consumer_id": 31,
+            "modified": "2014-12-18 00:42:53",
+            "created": "2014-12-18 00:42:53",
+            "id": "5492230daa6cf920738b4578"
+        }
+    ]
+}'''
 
 class Test(unittest.TestCase):
     def test_parse_dates(self):
@@ -81,7 +164,26 @@ class Test(unittest.TestCase):
 
         self.assertEqual(result, expected)
 
-    @unittest.skip("Haven't figured out notifications yet")
+    def test_parse_notifications(self):
+        n = json.loads(NOTIFICATION)
+        subid = 134
+
+        result = Urthecast.parse_notifications(n, subid)
+        result = len(result['payload'])
+        expected = 3
+
+        self.assertEqual(result, expected)
+
+    def test_parse_notifications_nosubid(self):
+        n = json.loads(NOTIFICATION)
+
+        result = Urthecast.parse_notifications(n)
+        result = len(result['payload'])
+        expected = 4
+
+        self.assertEqual(result, expected)
+
+    @unittest.skip("No active notifications yet")
     def test_notifications(self):
         subid = 398  # previously created
         result = Urthecast.notifications(subid)
