@@ -164,29 +164,17 @@ class Test(unittest.TestCase):
 
         self.assertEqual(result, expected)
 
-    def test_parse_notifications(self):
-        n = json.loads(NOTIFICATION)
-        subid = 134
-
-        result = Urthecast.parse_notifications(n, subid)
-        result = len(result['payload'])
-        expected = 3
-
-        self.assertEqual(result, expected)
-
-    def test_parse_notifications_nosubid(self):
-        n = json.loads(NOTIFICATION)
-
-        result = Urthecast.parse_notifications(n)
-        result = len(result['payload'])
-        expected = 4
+    @unittest.skip("No active notifications yet")
+    def test_notifications_subid(self):
+        subid = 398  # previously created
+        result = Urthecast.notifications(subid)
+        expected = None
 
         self.assertEqual(result, expected)
 
     @unittest.skip("No active notifications yet")
-    def test_notifications(self):
-        subid = 398  # previously created
-        result = Urthecast.notifications(subid)
+    def test_notifications_nosubid(self):
+        result = Urthecast.notifications()
         expected = None
 
         self.assertEqual(result, expected)
