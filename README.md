@@ -8,4 +8,4 @@ The Global Forest Watch API is currently in beta. Based on feedback from trusted
 
 Forest change measures tree cover loss, tree cover gain, or forest disturbance. The following forest change data are available through the API: University of Maryland tree cover loss & gain, FORMA alerts, IMAZON SAD alerts, QUICC alerts, and NASA active fires.
 
-# Test Change for GIT HOOKS
+# Test Change for GIT 
