@@ -91,7 +91,15 @@ def pixelCloudScore(img):
 
     def _rescale(img, exp, thresholds):
         """A helper to apply an expression and linearly rescale the output."""
+        logging.info('pixelCloudScore._rescale')
+        logging.info(exp)
+        logging.info(thresholds)
+        logging.info(type(thresholds))
+        logging.info(img)
+        logging.info("start-expression")
         img = img.expression(exp, {'img': img})
+        logging.info("end-expression")
+        logging.info(img)
         res = img.subtract(thresholds[0]).divide(thresholds[1] - thresholds[0])
         return res
 
@@ -215,8 +223,9 @@ def _landsat_id(alert_date, coords, offset_days=120):
       offset_days: integer number of days to start image search"""
     d = datetime.datetime.strptime(alert_date, '%Y-%m-%d')
     begin_date = d - datetime.timedelta(days=offset_days)
+    begin_date = begin_date.strftime('%Y-%m-%d')
     poly = ee.Feature.Polygon(coords)
-    coll = ee.ImageCollection('LANDSAT/LC8_L1T_TOA')
+    coll = ee.ImageCollection('LC8_L1T_TOA')
     filtered = coll.filterDate(begin_date, alert_date).filterBounds(poly)
     desc = filtered.sort('system:time_start', False).limit(1)
     return desc.getInfo()['features'][0]['id']
@@ -229,8 +238,15 @@ def _get_final_image(image_id, coords):
     Args:
       image_id: The GEE Landsat asset ID, string
       coords: nested list of box coordinates, counter-clockwise"""
-    loc = 'LANDSAT/%s' % image_id
+    loc = image_id
+    logging.info("_get_final_image")
+    logging.info(image_id)
+
     img = ee.Image(loc)
+    logging.info("_get_final_image2")
+    logging.info(img)
+
+
     color = img.select("B6", "B5", "B4")
     pan = img.select("B8")
     sharp = _hsvpan(color, pan)
@@ -239,6 +255,12 @@ def _get_final_image(image_id, coords):
     params = {'scale': 30, 'crs': 'EPSG:4326', 'region': str(coords)}
     poly = ee.Feature.Polygon(coords)
     url = visual_image.getThumbUrl(params)
+    logging.info("_get_final_image3")
+    logging.info(url)
+    logging.info(img.clip(poly))
+    logging.info('---- cloud')
+    logging.info(cloudScore(img.clip(poly)))
+    logging.info(">>>>>> DONE <<<<<<<<<")
     return dict(
         final_image=url,
         final_score=cloudScore(img.clip(poly))
@@ -280,6 +302,7 @@ def _boom_hammer(lat, lon, h, w, date, res, asset, fmt):
 
     """
     coords = _create_box(lon, lat, w, h)
+    logging.info("_boom_hammer   ")
 
     final = _get_final_image(_landsat_id(date, coords), coords)
     reference = _get_reference_image(date, coords)
